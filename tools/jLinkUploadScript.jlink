@@ -1,0 +1,4 @@
+h
+loadbin ble_emrg_build.bin, 0x00000
+r
+qc
