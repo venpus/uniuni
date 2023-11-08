@@ -57,6 +57,15 @@ Advertising packet
         uint16_t battery_level  - current battery level in mV
         uint16_t button_state   - current button state (0/1 - release/pressed)
 
+    There are 2 scenarios (see description above):
+
+        - if we wake up due to timer (just to send information about battery status), 
+          then button_state field will have information about current button state, so
+          it may be chaged during advertising period in case someone has pressed the button
+
+        - if we wake up due to button press, then button_state field will be equal to 1 during
+          full advertising perdio even in the button has been released at some point.
+
     ATTENTION. Bluetooth LE uses little endianness to represent the data
 
     ATTENTION. Right now Company ID is 0x0059 (it's Nordic Semiconductor Company Identifier). 

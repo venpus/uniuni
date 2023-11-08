@@ -259,9 +259,28 @@ int BluetoothInit(void)
     return err;
 }
 
-int BluetoothAdvStart(void)
+int BluetoothAdvStart(int type)
 {
     int err = 0;
+
+    UpdateAdvManufactureData();
+
+    if (type == BLE_ADV_TYPE_PING)
+    {
+        adv_mfg_data.button_state = BUTTON_STATE_RELEASED;
+    }
+    else if (type == BLE_ADV_TYPE_EMERGENCY)
+    {
+        // if we start advertising due to emergency case we need to ensure that
+        // the button_state field equals to BUTTON_STATE_PRESSED even if the button
+        // release at some point
+
+        adv_mfg_data.button_state = BUTTON_STATE_PRESSED;
+    }
+    else
+    {
+        LOG_ERR("Unexpected type for bluetooth advertising");
+    }
 
     err = bt_le_adv_start(adv_param, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
 

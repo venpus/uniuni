@@ -64,7 +64,13 @@ static void AwaitButtonReleased(void)
     }
 }
 
-static void CommonWakeupAction(void)
+enum
+{
+    WAKEUP_ACTION_PING = 0,
+    WAKEUP_ACTION_EMERGENCY,
+};
+
+static void CommonWakeupAction(int type)
 {
     static int timeout;
 
@@ -81,7 +87,19 @@ static void CommonWakeupAction(void)
 
     // send information via BLE (BLE advertising only)
 
-    BluetoothAdvStart();
+    if (type == WAKEUP_ACTION_PING)
+    {
+        BluetoothAdvStart(BLE_ADV_TYPE_PING);
+    }
+    else if (type == WAKEUP_ACTION_EMERGENCY)
+    {
+        BluetoothAdvStart(BLE_ADV_TYPE_EMERGENCY);
+    }
+    else
+    {
+        LOG_ERR("Unexpected type of wakeup action. It will be handled as PING");
+        BluetoothAdvStart(BLE_ADV_TYPE_PING);
+    }
 
     timeout = 0;
     while (1)
@@ -94,7 +112,15 @@ static void CommonWakeupAction(void)
             }
         }
 
-        BluetoothAdvUpdate();
+        // we need to update advertising information (information about button status)
+        // only during PING, otherwise we need to keep all field fixed (even if the button
+        // has been release at some point)
+
+        if (type == WAKEUP_ACTION_PING)
+        {
+            BluetoothAdvUpdate();
+        }
+
         ShowConnectionStatus();
         
         timeout += TIME_MSEC_CORE_PING;
@@ -164,7 +190,7 @@ void CoreStart(void)
     // immideately, otherwise it's not clear if everything is okay or not
     // (especially if we have tried to update the code - OTA)
 
-    CommonWakeupAction();
+    CommonWakeupAction(WAKEUP_ACTION_PING);
 
     static int timeout = 0;
     while (1)
@@ -174,9 +200,13 @@ void CoreStart(void)
             if (buttonPressEvent)
             {
                 buttonPressEvent = 0;
+                CommonWakeupAction(WAKEUP_ACTION_EMERGENCY);
+            }
+            else
+            {
+                CommonWakeupAction(WAKEUP_ACTION_PING);
             }
 
-            CommonWakeupAction();
             timeout = 0;
         }
 

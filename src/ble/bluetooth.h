@@ -13,9 +13,15 @@ enum
     BLE_STATUS_CONNECTED,
 };
 
+enum
+{
+    BLE_ADV_TYPE_PING = 0,
+    BLE_ADV_TYPE_EMERGENCY,
+};
+
 int BluetoothInit       (void);
 
-int BluetoothAdvStart   (void);
+int BluetoothAdvStart   (int type);
 int BluetoothAdvUpdate  (void);
 int BluetoothAdvStop    (void);
 
