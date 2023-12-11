@@ -14,6 +14,7 @@ target_sources(app PRIVATE
   src/core.c
   src/version.c
   src/ble/bluetooth.c
+  src/ble/eddystone.c
   src/drivers/board.c
   src/drivers/leds/drv_leds.c
   src/drivers/buttons/drv_button.c

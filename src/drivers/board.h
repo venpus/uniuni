@@ -15,6 +15,8 @@ int     HardwareInit        (void);
 void    PrintResetReason    (void);
 void    SystemShutdown      (void);
 
+int     GetSerialNumber     (void);
+
 #ifdef __cplusplus
     }
 #endif

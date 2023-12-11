@@ -44,6 +44,25 @@ int HardwareInit(void)
     return err;
 }
 
+int GetSerialNumber(void)
+{
+    // SVBeacon_0000000
+
+    // ATTENTION. User information configuration registers (UICRs) is used to keep 
+    // serial number. It's written during production toghether with the rest code
+
+    // the first customer UICR is used to keep the serial number
+    //    addr: 0x10001080  (base address + offset = 0x10001000 + 0x080)
+
+    uint32_t * consumer0 = (uint32_t *) (0x10001000 + 0x080);
+
+    // not full 32bit number is used as a serial number
+
+    uint32_t serialNumber = ( (*consumer0) & 0xFFFFFFF);
+    
+    return serialNumber;
+}
+
 void PrintResetReason(void)
 {
     uint32_t reason;
